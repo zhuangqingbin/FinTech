@@ -32,9 +32,9 @@ class EMAIL:
 
     def connect(self):
         try:
-            self.smtpObj = smtplib.SMTP()
+            self.smtpObj = smtplib.SMTP_SSL(self.__mail_host, 465)
             # 发件人邮箱中的SMTP服务器，端口是25
-            self.smtpObj.connect(self.__mail_host, 25)  #
+            #self.smtpObj.connect(self.__mail_host, 25)  #
             self.smtpObj.login(self.__mail_user, self.__mail_token)
         except:
             self.smtpObj = None

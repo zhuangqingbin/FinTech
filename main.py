@@ -26,10 +26,10 @@ dfSZ = dfSZ.sort_values('rank').drop(['rank'], axis = 1).\
 
 today = Time.now()
 msg = parse_data(dfSH, '沪股通{}月{}日前十大成交详细数据'.\
-                 format(int('05'),int('08')))
+                 format(int('05'), int('08')))
 msg += '<br><br>'
 msg += parse_data(dfSZ, '深股通{}月{}日前十大成交详细数据'.\
-                 format(int('05'),int('08')))
+                 format(int('05'), int('08')))
 
 socket = LimitUp()
 socket.send(msg)
