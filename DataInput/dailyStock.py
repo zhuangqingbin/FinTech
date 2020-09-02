@@ -1,8 +1,8 @@
 import tushare as ts
 import pandas as pd
-from utils import reduce_mem_usage,TOCKEN
+from utils import reduce_mem_usage, TOCKEN
 
-def get_daily_stock(date = None, ts_code = None, **kwargs):
+def get_daily_stock(ts_code = None, date = None, **kwargs):
     """
     :param date: str，选择当天所有正常交易的股票日内数据，与ts_code二选其一
     :param ts_code: str, 股票代码，选择指定股票日内数据，与date二选其一
@@ -41,16 +41,27 @@ def get_daily_stock(date = None, ts_code = None, **kwargs):
         ts.set_token(TOCKEN)
         pro = ts.pro_api()
     if ts_code:
+        if not (ts_code.endswith('SZ') or ts_code.endswith('SH')):
+            if ts_code.startswith('0') or ts_code.startswith('3'):
+                ts_code = ts_code + '.SZ'
+            if ts_code.startswith('6'):
+                ts_code = ts_code + '.SH'
+
         daily_stock = pro.daily(ts_code = ts_code, **kwargs)
         daily_stock_basic = pro.daily_basic(ts_code = ts_code, **kwargs)
-        if not kwargs and len(daily_stock) == 4000:
-            furtheset_date = daily_stock.trade_date.values[-1]
-            daily_stock_further = pro.daily(ts_code = ts_code, end_date = furtheset_date)
-            daily_stock_basic_further = pro.daily_basic(ts_code = ts_code, end_date = furtheset_date)
-            daily_stock = pd.concat([daily_stock, daily_stock_further]).\
-                                drop_duplicates().reset_index(drop=True)
-            daily_stock_basic = pd.concat([daily_stock_basic, daily_stock_basic_further]).\
-                                drop_duplicates().reset_index(drop=True)
+        if not kwargs:
+            if len(daily_stock) == 5000:
+                daily_stock_furtheset_date = daily_stock.trade_date.values[-1]
+                daily_stock_further = pro.daily(ts_code = ts_code,
+                                                end_date = daily_stock_furtheset_date)
+                daily_stock = pd.concat([daily_stock, daily_stock_further]). \
+                                         drop_duplicates().reset_index(drop=True)
+            if len(daily_stock_basic) == 4000:
+                daily_stock_basic_furtheset_date = daily_stock_basic.trade_date.values[-1]
+                daily_stock_basic_further = pro.daily_basic(ts_code = ts_code,
+                                                            end_date = daily_stock_basic_furtheset_date)
+                daily_stock_basic = pd.concat([daily_stock_basic, daily_stock_basic_further]).\
+                                               drop_duplicates().reset_index(drop=True)
     if date:
         daily_stock = pro.daily(trade_date = date)
         daily_stock_basic = pro.daily_basic(trade_date = date)

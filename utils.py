@@ -2,11 +2,13 @@ from datetime import timedelta, datetime
 import time
 from contextlib import contextmanager
 import numpy as np
+import tushare as ts
+
 import pandas as pd
 import tushare as ts
 import pickle
 import os
-TOCKEN = "e5cd0078660a166b241a4082d51cbedb6c0bb8d368e671ad6e6dee7b"
+TOCKEN = "0b387e3fe5a6f30c163ea1452a08ef7e2992b8e21bb23e60485dbd39"
 
 
 class Time:
@@ -24,6 +26,21 @@ class Time:
             return datetime.now().strftime("%Y%m%d %H:%M:%S")
         else:
             return datetime.now().strftime("%Y%m%d")
+
+    @staticmethod
+    def ex_now(detail = False):
+        pro = ts.pro_api()
+        df = pro.trade_cal(exchange = '', start_date = Time.delta(-7),
+                           end_date = Time.now())
+        for i in range(len(df)):
+            if df.iloc[-i]['is_open'] == 1:
+                result =  df.iloc[-i]['cal_date']
+                break
+        if detail:
+            return datetime.strptime(result,"%Y%m%d").\
+                        strftime("%Y%m%d %H:%M:%S")
+        else:
+            return result
 
 
 @contextmanager
@@ -100,7 +117,6 @@ def parse_row(row, header, color = None):
     return result
 
 def parse_data(data, title):
-    result = ''
     result = '<div>'
     result += '<table border="1">'
     result += '<caption><font size = "5" color = "red" > {} </font></caption>'.format(title)

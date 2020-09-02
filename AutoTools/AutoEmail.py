@@ -3,13 +3,18 @@
 
 # Author: Jimmy
 # Date: 2020-05-08 10:19
-
+from abc import  abstractclassmethod
 import smtplib
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.utils import parseaddr, formataddr
 from email.header import Header
 from config import MAIL_HOST ,MAIL_USER
 from config import MAIL_TOKEN, SENDER, RECEVIERS
 from config import SENDER_NAME, RECEVIER_NAME
+
+import os
 mail_msg = """
 <p>Python 邮件发送测试...</p>
 <p><a href="http://www.runoob.com">这是一个链接</a></p>
@@ -34,22 +39,20 @@ class EMAIL:
         try:
             self.smtpObj = smtplib.SMTP_SSL(self.__mail_host, 465)
             # 发件人邮箱中的SMTP服务器，端口是25
-            #self.smtpObj.connect(self.__mail_host, 25)  #
+            # self.smtpObj.connect(self.__mail_host, 25)
             self.smtpObj.login(self.__mail_user, self.__mail_token)
         except:
             self.smtpObj = None
 
-    def send(self,message):
-        pass
 
 
-class LimitUp(EMAIL):
 
-    def __init__(self, title = '每日涨停股快报'):
-        super(LimitUp, self).__init__()
+class TextEmail(EMAIL):
+
+    def __init__(self, title = '每日快报'):
+        super(TextEmail, self).__init__()
         # title邮件名
         self.title = title
-
 
     def send(self, message):
         message = MIMEText(message, 'html', 'utf-8')
@@ -60,6 +63,49 @@ class LimitUp(EMAIL):
         message['From'] = Header(self.sender_name, 'utf-8')
         # 括号里的对应收件人邮箱昵称、收件人邮箱账号
         message['To'] = Header(self.receiver_name, 'utf-8')
+
+        try:
+            self.smtpObj.sendmail(self.sender, self.receivers,
+                                  message.as_string())
+            print("邮件发送成功")
+        except smtplib.SMTPException:
+            print("Error: 无法发送邮件")
+
+
+class ImageEmail(EMAIL):
+
+    def __init__(self, title = '每日快报'):
+        super(ImageEmail, self).__init__()
+        # title邮件名
+        self.title = title
+
+    def send(self, store_dir, stock_list):
+        message = MIMEMultipart('related')
+
+        # 邮件名
+        message['Subject'] = Header(self.title, 'utf-8')
+        # 括号里的对应发件人邮箱昵称（随便起）、发件人邮箱账号
+        message['From'] = Header(self.sender_name, 'utf-8')
+        # 括号里的对应收件人邮箱昵称、收件人邮箱账号
+        message['To'] = Header(self.receiver_name, 'utf-8')
+
+        html_content = '<html><body>'
+        #html_content += '<head><style>#string{text-align:center;font-size:25px;}</style><div id="string">我是居中显示的标题<div></head>'
+        for stock in stock_list:
+            html_content += '<a href="www.baidu.com"><img src="cid:{}" height="70" width="110"></a>'.format(stock)
+        html_content += '</body></html>'
+
+        content = MIMEText(html_content, 'html', 'utf-8')
+        message.attach(content)
+
+        for stock in stock_list:
+            with open(os.path.join(store_dir, stock + '.jpg'), 'rb') as fp:
+            #fp = open('/Users/jimmy/python/FinTech/DataStore/monitor_stocks/002049.jpg', 'rb')
+                msgImage = MIMEImage(fp.read())
+            #fp.close()
+            # 这个id用于上面html获取图片
+                msgImage.add_header('Content-ID', stock)
+                message.attach(msgImage)
 
         try:
             self.smtpObj.sendmail(self.sender, self.receivers,
@@ -96,3 +142,7 @@ def test(message):
         print("邮件发送成功")
     except smtplib.SMTPException:
         print("Error: 无法发送邮件")
+
+if __name__ == '__main__':
+    email = TextEmail("Test For AutoEmail")
+    email.send("Hello World.")
