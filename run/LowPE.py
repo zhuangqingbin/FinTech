@@ -34,7 +34,7 @@ def judge_low_pe(ts_code):
 
 with timer("获取低PE股票"):
     STOCKS = []
-    for ts_code in all_stocks:
+    for ts_code in all_stocks[:500]:
         if judge_low_pe(ts_code):
             STOCKS.append(ts_code)
 

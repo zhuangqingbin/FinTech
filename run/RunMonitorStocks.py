@@ -20,7 +20,7 @@ plt.rcParams["font.family"] = 'Arial Unicode MS'
 import datetime
 from config import STOCKS
 from DataInput import get_daily_stock
-from AutoEmail import ImageEmail
+from AutoEmail import ImageEmail,ImageEmailNew
 from utils import timer
 
 
@@ -54,5 +54,10 @@ with timer("可视化过程"):
 
 
 #发送邮件
-socket = ImageEmail('监控股票')
+#发送邮件
+socket = ImageEmailNew('监控股票')
+#socket.add_text('Hel')
 socket.send(STOCKS_DIR, STOCKS)
+
+socket1 = ImageEmail('监控股票')
+socket1.send(STOCKS_DIR, STOCKS)

@@ -78,6 +78,21 @@ class ImageEmail(EMAIL):
         super(ImageEmail, self).__init__()
         # title邮件名
         self.title = title
+        self._html = """
+        <html>
+            %s
+        </html>
+        """
+
+    def add_text(self, message):
+        message_html = """
+            <p style="text-align:center">
+                {}
+            </p>
+            <br>
+            %s
+        """.format(message)
+        self._html = self._html % message_html
 
     def send(self, store_dir, stock_list):
         message = MIMEMultipart('related')
@@ -89,13 +104,15 @@ class ImageEmail(EMAIL):
         # 括号里的对应收件人邮箱昵称、收件人邮箱账号
         message['To'] = Header(self.receiver_name, 'utf-8')
 
-        html_content = '<html><body>'
+        image_html = '<body>'
         #html_content += '<head><style>#string{text-align:center;font-size:25px;}</style><div id="string">我是居中显示的标题<div></head>'
         for stock in stock_list:
-            html_content += '<a href="www.baidu.com"><img src="cid:{}" height="70" width="110"></a>'.format(stock)
-        html_content += '</body></html>'
+            image_html += '<a href="www.baidu.com"><img src="cid:{}" height="70" width="110"></a>'.format(stock)
+        image_html += '</body>'
+        self._html = self._html % image_html
 
-        content = MIMEText(html_content, 'html', 'utf-8')
+
+        content = MIMEText(self._html , 'html', 'utf-8')
         message.attach(content)
 
         for stock in stock_list:
@@ -113,6 +130,8 @@ class ImageEmail(EMAIL):
             print("邮件发送成功")
         except smtplib.SMTPException:
             print("Error: 无法发送邮件")
+
+
 
 
 def test(message):
