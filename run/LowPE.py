@@ -23,6 +23,9 @@ import datetime
 from DataInput import get_daily_stock
 from AutoEmail import ImageEmail
 from utils import timer
+from utils import Time
+
+today = Time.ex_now()
 
 
 pro = ts.pro_api()

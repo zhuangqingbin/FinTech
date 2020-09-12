@@ -8,7 +8,7 @@ import pandas as pd
 import tushare as ts
 import pickle
 import os
-TOCKEN = "5dc8ee05de05bf1aed665afc8c6e80687a761a2133503526d76d9eaa"
+TOCKEN = "64ce1845b91d06f579525db6e53d497b1c513174331f5509320f4bd5"
 
 
 
