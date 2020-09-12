@@ -7,6 +7,7 @@
 import multiprocessing
 import sys
 import os,pickle
+sys.path.append(os.path.join(os.getcwd(), '..'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataProcess'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'AutoTools'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataInput'))
@@ -20,10 +21,11 @@ plt.rcParams["font.family"] = 'Arial Unicode MS'
 import datetime
 from config import STOCKS
 from DataInput import get_daily_stock
-from AutoEmail import ImageEmail,ImageEmailNew
+from AutoEmail import ImageEmail
 from utils import timer
+from utils import Time
 
-
+today = Time.ex_now()
 # 健康股票存储文件夹
 STOCKS_DIR = os.path.join(os.getcwd(), '..',
                     'DataStore', 'monitor_stocks')
@@ -55,9 +57,7 @@ with timer("可视化过程"):
 
 #发送邮件
 #发送邮件
-socket = ImageEmailNew('监控股票')
-#socket.add_text('Hel')
+socket = ImageEmail('监控股票')
+socket.add_text('{}月{}日监控股票百日收盘趋势'.\
+                 format(int(today[4:6]), int(today[-2:])))
 socket.send(STOCKS_DIR, STOCKS)
-
-socket1 = ImageEmail('监控股票')
-socket1.send(STOCKS_DIR, STOCKS)

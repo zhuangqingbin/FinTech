@@ -7,6 +7,7 @@
 import sys
 import os
 import tushare as ts
+sys.path.append(os.path.join(os.getcwd(), '..'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataProcess'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'AutoTools'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataInput'))
