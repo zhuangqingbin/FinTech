@@ -16,9 +16,10 @@ from AutoEmail import TextEmail
 from utils import parse_data
 from utils import Time
 
+
+
 today = Time.ex_now()
 pro = ts.pro_api()
-
 
 dfSH = pro.hsgt_top10(trade_date = today, market_type='1',
         fields = ['name', 'rank', 'amount', 'net_amount', 'buy', 'sell'])

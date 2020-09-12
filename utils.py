@@ -8,7 +8,8 @@ import pandas as pd
 import tushare as ts
 import pickle
 import os
-TOCKEN = "0b387e3fe5a6f30c163ea1452a08ef7e2992b8e21bb23e60485dbd39"
+TOCKEN = "5dc8ee05de05bf1aed665afc8c6e80687a761a2133503526d76d9eaa"
+
 
 
 class Time:
@@ -29,6 +30,7 @@ class Time:
 
     @staticmethod
     def ex_now(detail = False):
+        ts.set_token(TOCKEN)
         pro = ts.pro_api()
         df = pro.trade_cal(exchange = '', start_date = Time.delta(-7),
                            end_date = Time.now())
