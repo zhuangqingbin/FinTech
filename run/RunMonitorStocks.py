@@ -16,7 +16,8 @@ sys.path.append(os.path.join(os.getcwd(), '..', 'DataInput'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.rcParams["font.family"] = 'Arial Unicode MS'
+# plt.rcParams["font.family"] = 'Arial Unicode MS'
+plt.rcParams["font.sans-serif"] = 'SimHei'
 
 import datetime
 from config import STOCKS

@@ -17,7 +17,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.rcParams["font.family"] = 'Arial Unicode MS'
+# plt.rcParams["font.family"] = 'Arial Unicode MS'
+plt.rcParams["font.sans-serif"] = 'SimHei'
 
 import datetime
 from DataInput import get_daily_stock
