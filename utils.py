@@ -33,10 +33,10 @@ class Time:
         ts.set_token(TOCKEN)
         pro = ts.pro_api()
         df = pro.trade_cal(exchange = '', start_date = Time.delta(-7),
-                           end_date = Time.now())
+                           end_date = Time.now()).sort_values('cal_date', ascending=False)
         for i in range(len(df)):
-            if df.iloc[-i]['is_open'] == 1:
-                result =  df.iloc[-i]['cal_date']
+            if df.iloc[i]['is_open'] == 1:
+                result =  df.iloc[i]['cal_date']
                 break
         if detail:
             return datetime.strptime(result,"%Y%m%d").\
@@ -116,18 +116,4 @@ def parse_row(row, header, color = None):
             result += normal_format.format('{:.2e}'.format(row[i]))
         i += 1
     result += '</tr>'
-    return result
-
-def parse_data(data, title):
-    result = '<div>'
-    result += '<table border="1">'
-    result += '<caption><font size = "5" color = "red" > {} </font></caption>'.format(title)
-
-    result += parse_row(data.columns, header=True)
-    for index, value in data.iterrows():
-        color = 'red' if value[2] > 0 else 'green'
-        result += parse_row(value, header=False,
-                            color=color)
-
-    result += '</table>\n</div>'
     return result
