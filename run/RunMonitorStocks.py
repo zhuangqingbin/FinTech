@@ -58,7 +58,8 @@ with timer("可视化过程"):
 
 #发送邮件
 #发送邮件
-socket = ImageEmail('监控股票')
+socket = ImageEmail('{}月{}日监控股票'.\
+                 format(int(today[4:6]), int(today[-2:])))
 socket.add_text('{}月{}日监控股票百日收盘趋势'.\
                  format(int(today[4:6]), int(today[-2:])))
 socket.send(STOCKS_DIR, STOCKS)

@@ -2,39 +2,34 @@
 # /usr/bin/env python
 
 # Author: Jimmy
-# Date: 2020-06-18 11:58
-
+# Date: 2020-08-29 22:30
+import multiprocessing
 import sys
 import os
 import tushare as ts
-import numpy as np
 sys.path.append(os.path.join(os.getcwd(), '..'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataProcess'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'AutoTools'))
 sys.path.append(os.path.join(os.getcwd(), '..', 'DataInput'))
-
-from AutoEmail import TextEmail
-from utils import Time
 import pickle
+import numpy as np
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+# plt.rcParams["font.family"] = 'Arial Unicode MS'
+plt.rcParams["font.sans-serif"] = 'SimHei'
 
+import datetime
+from DataInput import get_daily_stock
+from AutoEmail import TextEmail
+from utils import timer
+from utils import Time
 
 today = Time.ex_now()
-
 pro = ts.pro_api()
-with open(os.path.join(os.getcwd(),'..','DataStore','stock_map.pkl'),'rb') as f:
-    stock_map = pickle.load(f)
-
-
-dfSH = pro.hsgt_top10(trade_date = today, market_type='1',
-        fields = 'ts_code,name,rank,amount,net_amount,buy,sell')
-dfSH = dfSH.sort_values('rank').drop(['rank'], axis = 1).\
-        reset_index(drop = True)
-
-dfSZ = pro.hsgt_top10(trade_date = today, market_type='3',
-        fields = 'ts_code,name,rank,amount,net_amount,buy,sell')
-dfSZ = dfSZ.sort_values('rank').drop(['rank'], axis = 1).\
-        reset_index(drop = True)
+limit_up = pro.limit_list(trade_date = today, limit_type = 'U')
+limit_down = pro.limit_list(trade_date = today, limit_type = 'D')
 
 content_html = '''
     <style>
@@ -62,16 +57,17 @@ content_html = '''
     '''
 
 def get_table_html(data, title):
-    def colorMap(x):
-        a = np.double(x)
-        if a > 0:
-            c = 'red'
-        elif a < 0:
-            c = 'green'
+    def valuFormat(x, type):
+        if type == 'percent':
+            return '{:.2f}%'.format(x)
+        elif type == 'int':
+            return '{}'.format(int(x))
+        elif type == 'float':
+            return '{:.2f}'.format(x)
+        elif type == 'E':
+            return '{:.2E}'.format(x)
         else:
-            c = 'black'
-        s = '<font color="%s">%.2E</font>' % (c, a)
-        return s
+            return ''
 
     def addHref(row):
         href_format = "<a href = 'http://quote.eastmoney.com/%s.html'>%s</a>"
@@ -86,10 +82,10 @@ def get_table_html(data, title):
         <table>
                <tr style="background:#2196F3; color:white; align:center;font-size:1.25em">
                 <th style="width:50px; align:center">证券</th>
-                <th style="width:100px">交易量</th>
-                <th style="width:100px">净交易额</th>
-                <th style="width:100px">买量</th>
-                <th style="width:100px">卖量</th>
+                <th style="width:100px">振幅</th>
+                <th style="width:100px">封单金额</th>
+                <th style="width:100px">打开次数</th>
+                <th style="width:100px">强度</th>
                </tr>'''
     for index, row in data.iterrows():
         color = '#E1F5FE' if index % 2 == 0 else '#FAFAFA'
@@ -99,24 +95,20 @@ def get_table_html(data, title):
                 <td align="center">%s</td>
                 <td align="center">%s</td>
                 <td align="center">%s</td>
-            ''' % (addHref(row), colorMap(row['amount']), colorMap(row['net_amount']),
-                   colorMap(row['buy']), colorMap(row['sell']))
+            ''' % (addHref(row), valuFormat(row['amp'],'percent'), valuFormat(row['fd_amount'],'E'),
+                   valuFormat(row['open_times'],'int'), valuFormat(row['strth'],'float'))
         row_html += si
         row_html += '''</tr>'''
         table_html += row_html.strip()
     table_html += '</table>'
     return table_html
 
-content_html += get_table_html(dfSH, '沪股通{}月{}日前十大成交详细数据'.\
+content_html += get_table_html(limit_up, '{}月{}日涨停股票'.\
                         format(int(today[4:6]), int(today[-2:])))
-content_html += get_table_html(dfSZ, '深股通{}月{}日前十大成交详细数据'.\
+content_html += get_table_html(limit_down, '{}月{}日跌停股票'.\
                         format(int(today[4:6]), int(today[-2:])))
 
 # 发送邮件
-socket = TextEmail('沪深股通{}月{}日前十大成交详细数据'.\
+socket = TextEmail('{}月{}日涨跌停股票汇总'.\
                     format(int(today[4:6]), int(today[-2:])))
 socket.send(content_html)
-
-
-
-

@@ -100,20 +100,3 @@ def reduce_mem_usage(data, verbose=True):
 
     return data
 
-
-
-def parse_row(row, header, color = None):
-    result = '<tr>'
-    if header:
-        normal_format = '<th> {} </th>'
-    else:
-        normal_format = '<th><p style="color:%s;"> {} </p></th>' % color
-    i = 0
-    while i < len(row):
-        if type(row[i]) == str:
-            result += normal_format.format(row[i])
-        else:
-            result += normal_format.format('{:.2e}'.format(row[i]))
-        i += 1
-    result += '</tr>'
-    return result

@@ -72,5 +72,6 @@ with timer("可视化过程"):
 
 
 #发送邮件
-socket = ImageEmail('低估值股票')
+socket = ImageEmail('{}月{}日低估值股票汇总'.\
+                    format(int(today[4:6]), int(today[-2:])))
 socket.send(STOCKS_DIR, STOCKS)
