@@ -1,1 +1,3 @@
-python /root/FinTech/run/RunMonitorStocks.py
+cd /root/FinTech/run/
+
+python RunMonitorStocks.py
