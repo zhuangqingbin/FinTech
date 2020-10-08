@@ -32,7 +32,7 @@ class Time:
     def ex_now(detail = False):
         ts.set_token(TOCKEN)
         pro = ts.pro_api()
-        df = pro.trade_cal(exchange = '', start_date = Time.delta(-7),
+        df = pro.trade_cal(exchange = '', start_date = Time.delta(-14),
                            end_date = Time.now()).sort_values('cal_date', ascending=False)
         for i in range(len(df)):
             if df.iloc[i]['is_open'] == 1:
