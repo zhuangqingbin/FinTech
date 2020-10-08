@@ -36,13 +36,28 @@ class Time:
                            end_date = Time.now()).sort_values('cal_date', ascending=False)
         for i in range(len(df)):
             if df.iloc[i]['is_open'] == 1:
-                result =  df.iloc[i]['cal_date']
+                result = df.iloc[i]['cal_date']
                 break
         if detail:
             return datetime.strptime(result,"%Y%m%d").\
                         strftime("%Y%m%d %H:%M:%S")
         else:
             return result
+
+    @staticmethod
+    def recent_date(days = 7):
+        ts.set_token(TOCKEN)
+        pro = ts.pro_api()
+        df = pro.trade_cal(exchange = '', start_date=Time.delta(-days * 3),
+                           end_date = Time.now()).sort_values('cal_date', ascending=False)
+        date_list = []
+
+        for i in range(len(df)):
+            if len(date_list) >= days:
+                break
+            if df.iloc[i]['is_open'] == 1:
+                date_list.append(df.iloc[i]['cal_date'])
+        return date_list
 
 
 @contextmanager

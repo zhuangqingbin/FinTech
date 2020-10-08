@@ -1,2 +1,1 @@
-cd run
-python RunMonitorStocks.py
+python /root/FinTech/run/RunMonitorStocks.py
