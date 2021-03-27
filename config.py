@@ -6,7 +6,7 @@
 
 import os
 
-##### 自动化邮件系统
+#### 自动化邮件系统
 # 设置服务器
 MAIL_HOST = "smtp.qq.com"
 # 用户名
