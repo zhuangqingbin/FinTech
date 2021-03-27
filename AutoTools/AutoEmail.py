@@ -42,6 +42,7 @@ class EMAIL:
             # self.smtpObj.connect(self.__mail_host, 25)
             self.smtpObj.login(self.__mail_user, self.__mail_token)
         except:
+            print("连接失败")
             self.smtpObj = None
 
 
