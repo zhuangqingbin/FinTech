@@ -14,7 +14,7 @@ MAIL_USER = "360650538@qq.com"
 # 授权码
 
 
-MAIL_TOKEN = 'wcejazfddfobcadb'
+MAIL_TOKEN = 'ksymhxmiyrdxbhgc'
 SENDER = '360650538@qq.com'
 # RECEVIERS = ['360650538@qq.com','ccczexin@163.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
 # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
