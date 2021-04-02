@@ -13,6 +13,8 @@ class MainGame():
     ENEMY_TANK_LIST = []
     ENEMY_TANK_NUM = 3
     BULLET_LIST = []
+    BULLET_MAX_NUM = 6
+    ENEMY_BULLET_LIST = []
     def __init__(self):
         pass
 
@@ -39,10 +41,22 @@ class MainGame():
             for eTank in MainGame.ENEMY_TANK_LIST:
                 eTank.dislpayTank()
                 eTank.randMove()
+                eBullet = eTank.shot()
+                if eBullet:
+                    MainGame.ENEMY_BULLET_LIST.append(eBullet)
             # 画子弹
             for bullet in MainGame.BULLET_LIST:
-                bullet.displayBullet()
-                bullet.move()
+                if bullet.live:
+                    bullet.displayBullet()
+                    bullet.move()
+                else:
+                    MainGame.BULLET_LIST.remove(bullet)
+            for bullet in MainGame.ENEMY_BULLET_LIST:
+                if bullet.live:
+                    bullet.displayBullet()
+                    bullet.move()
+                else:
+                    MainGame.ENEMY_BULLET_LIST.remove(bullet)
 
 
             if not MainGame.TANL_P1.stop:
@@ -79,7 +93,8 @@ class MainGame():
                     MainGame.TANL_P1.stop = False
                 elif event.key == pygame.K_SPACE:
                     print("shot")
-                    MainGame.BULLET_LIST.append(Bullet(MainGame.TANL_P1))
+                    if len(MainGame.BULLET_LIST) <= MainGame.BULLET_MAX_NUM:
+                        MainGame.BULLET_LIST.append(Bullet(MainGame.TANL_P1))
                 else:
                     pass
             if event.type == pygame.KEYUP:
@@ -98,7 +113,7 @@ class MainGame():
 
     def createEnemyTank(self):
         for i in range(MainGame.ENEMY_TANK_NUM):
-            MainGame.ENEMY_TANK_LIST.append(EnemyTank(random.randint(1,MainGame.SCREEN_WIDTH),100,random.randint(3,6)))
+            MainGame.ENEMY_TANK_LIST.append(EnemyTank(random.randint(1,MainGame.SCREEN_WIDTH/MainGame.TANL_P1.rect.width) * MainGame.TANL_P1.rect.width,100,random.randint(3,6)))
 
     def endGame(self):
         print("Bye")
@@ -174,11 +189,15 @@ class EnemyTank(Tank):
         else:
             self.move()
             self.step -= 1
+    def shot(self):
+        if random.randint(1,100) == 1:
+            return super().shot()
 class Bullet():
     def __init__(self, tank):
         self.image = pygame.image.load('imgs/tankmissile.gif')
         self.direction = tank.direction
         self.speed = MainGame.TANL_P1.speed * 1.5
+        self.live = True
         self.rect = self.image.get_rect()
         if self.direction == 'U':
             self.rect.left = tank.rect.left + tank.rect.width/2 - self.rect.width/2
@@ -199,15 +218,24 @@ class Bullet():
         if self.direction == 'L':
             if self.rect.left > 0:
                 self.rect.left -= self.speed
+            else:
+                self.live = False
+
         elif self.direction == 'R':
             if self.rect.left < MainGame.SCREEN_WIDTH - self.rect.width:
                 self.rect.left += self.speed
+            else:
+                self.live = False
         elif self.direction == 'D':
             if self.rect.top < MainGame.SCRENN_HEIGHT - self.rect.height:
                 self.rect.top += self.speed
+            else:
+                self.live = False
         elif self.direction == 'U':
             if self.rect.top > 0:
                 self.rect.top -= self.speed
+            else:
+                self.live = False
         else:
             pass
     def displayBullet(self):
